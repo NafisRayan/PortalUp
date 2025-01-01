@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors())upload// MongoDB connection URI (hardcoded for testing)
+app.use(cors())// MongoDB connection URI (hardcoded for testing)
 const mongoUri = 'mongodb+srv://vaugheu:temp2@temp2.hp1lz.mongodb.net/?retryWrites=true&w=majority&appName=temp2';
 console.log('MongoDB URI:', mongoUri); // Debugging
 
