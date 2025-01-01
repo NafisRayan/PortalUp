@@ -4,16 +4,21 @@ const FileUpload = () => {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null); // 'success' | 'error' | null
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      if (selectedFile.type.startsWith('image/')) {
-        setFilePreview(URL.createObjectURL(selectedFile));
-      } else {
-        setFilePreview(null);
+      if (selectedFile.size > 5 * 1024 * 1024) { // 5MB
+        alert('File size should be less than 5MB.');
+        return;
       }
+      if (!selectedFile.type.startsWith('image/')) {
+        alert('Only image files are allowed.');
+        return;
+      }
+      setFile(selectedFile);
+      setFilePreview(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -21,12 +26,16 @@ const FileUpload = () => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile) {
-      setFile(droppedFile);
-      if (droppedFile.type.startsWith('image/')) {
-        setFilePreview(URL.createObjectURL(droppedFile));
-      } else {
-        setFilePreview(null);
+      if (droppedFile.size > 5 * 1024 * 1024) { // 5MB
+        alert('File size should be less than 5MB.');
+        return;
       }
+      if (!droppedFile.type.startsWith('image/')) {
+        alert('Only image files are allowed.');
+        return;
+      }
+      setFile(droppedFile);
+      setFilePreview(URL.createObjectURL(droppedFile));
     }
   };
 
@@ -36,11 +45,12 @@ const FileUpload = () => {
       return;
     }
 
+    setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const response = await fetch('/upload', {
+      const response = await fetch('http://localhost:3000/upload', {
         method: 'POST',
         body: formData,
       });
@@ -48,18 +58,17 @@ const FileUpload = () => {
       if (response.ok) {
         setUploadStatus('success');
         const result = await response.json();
-        console.log(result.temporaryUrl);
         alert(`File uploaded successfully! Temporary URL: ${result.temporaryUrl}`);
       } else {
         setUploadStatus('error');
         const errorData = await response.text();
-        console.error('Upload failed:', errorData);
         alert(`File upload failed. ${errorData}`);
       }
     } catch (error) {
       setUploadStatus('error');
-      console.error('Upload error:', error);
       alert('File upload failed due to a network error.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -95,8 +104,8 @@ const FileUpload = () => {
           id="fileInput"
         />
       </label>
-      <button onClick={handleUpload} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
-        Upload
+      <button onClick={handleUpload} disabled={isUploading} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
+        {isUploading ? 'Uploading...' : 'Upload'}
       </button>
       {uploadStatus === 'success' && <p className="text-green-500 mt-2">File uploaded successfully!</p>}
       {uploadStatus === 'error' && <p className="text-red-500 mt-2">File upload failed. Please try again.</p>}
