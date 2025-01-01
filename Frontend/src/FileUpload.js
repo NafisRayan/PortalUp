@@ -1,10 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null); // 'success' | 'error' | null
   const [isUploading, setIsUploading] = useState(false);
+  const [temporaryUrl, setTemporaryUrl] = useState(null);
+  const [expirationTime, setExpirationTime] = useState(null);
+
+  useEffect(() => {
+    if (expirationTime) {
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = expirationTime.getTime() - now;
+
+        if (distance < 0) {
+          clearInterval(interval);
+          setTemporaryUrl(null);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [expirationTime]);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -58,7 +76,8 @@ const FileUpload = () => {
       if (response.ok) {
         setUploadStatus('success');
         const result = await response.json();
-        alert(`File uploaded successfully! Temporary URL: ${result.temporaryUrl}`);
+        setTemporaryUrl(result.temporaryUrl);
+        setExpirationTime(new Date(Date.now() + 60 * 1000));
       } else {
         setUploadStatus('error');
         const errorData = await response.text();
@@ -107,8 +126,18 @@ const FileUpload = () => {
       <button onClick={handleUpload} disabled={isUploading} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
         {isUploading ? 'Uploading...' : 'Upload'}
       </button>
-      {uploadStatus === 'success' && <p className="text-green-500 mt-2">File uploaded successfully!</p>}
+      {uploadStatus === 'success' && !temporaryUrl && <p className="text-green-500 mt-2">File uploaded successfully!</p>}
       {uploadStatus === 'error' && <p className="text-red-500 mt-2">File upload failed. Please try again.</p>}
+      {temporaryUrl && (
+        <div className="mt-4">
+          <p className="text-green-500">
+            Temporary URL: <a href={temporaryUrl} className="underline">{temporaryUrl}</a>
+          </p>
+          <p className="text-gray-400 text-sm">
+            Expires in approximately 1 minute.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
