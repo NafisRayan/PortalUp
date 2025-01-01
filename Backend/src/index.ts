@@ -1,108 +1,128 @@
 import express, { Express, Request, Response } from 'express';
-import { MongoClient, MongoClientOptions, Db } from 'mongodb';
+import { MongoClient, Db, GridFSBucket } from 'mongodb';
 import * as mongodb from 'mongodb';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
-import { GridFsStorage } from 'multer-gridfs-storage';
+import cors from 'cors';
 
 dotenv.config();
+
+const REFRESH_TOKEN_SECRET = 'your-secret-key'; // Hardcoded secret key
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
+// Middleware
 app.use(express.json());
-
-// MongoDB connection URI
+app.use(cors())// MongoDB connection URI (hardcoded for testing)
 const mongoUri = 'mongodb+srv://vaugheu:temp2@temp2.hp1lz.mongodb.net/?retryWrites=true&w=majority&appName=temp2';
+console.log('MongoDB URI:', mongoUri); // Debugging
+
 const dbName = 'portalup';
 
 let db: Db;
 
-// Configure GridFS storage
-const storage = new GridFsStorage({
-  url: mongoUri,
-  options: { useNewUrlParser: true, useUnifiedTopology: true },
-  file: (req, file) => {
-    return {
-      filename: file.originalname,
+// Multer for handling file uploads
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Connect to MongoDB
+MongoClient.connect(mongoUri)
+  .then((client) => {
+    db = client.db(dbName);
+    console.log('Connected to MongoDB');
+    console.log('Database:', db.databaseName); // Debugging
+  })
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB', err);
+  });
+
+// File upload endpoint
+app.post('/upload', upload.single('file'), async (req: Request, res: Response) => {
+  console.log('Upload request received:', req.file);
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded.' });
+  }
+
+  try {
+    const bucket = new GridFSBucket(db, {
       bucketName: 'uploads'
-    };
+    });
+
+    let uploadStream: mongodb.GridFSBucketWriteStream;
+    if (req.file) {
+      uploadStream = bucket.openUploadStream(req.file.originalname);
+      uploadStream.write(req.file.buffer);
+      uploadStream.end();
+
+      uploadStream.on('finish', async () => {
+        const fileId = uploadStream.id;
+        const refreshToken = jwt.sign({ fileId: fileId.toString() }, REFRESH_TOKEN_SECRET, { expiresIn: '1m' });
+        const tempUrl = `/files/${fileId}?refreshToken=${refreshToken}`;
+
+        const fileMetadata = {
+          _id: fileId, // Store the GridFS file ID
+          filename: req.file?.originalname,
+          mimetype: req.file?.mimetype,
+          size: req.file?.size,
+          expirationTime: new Date(Date.now() + 60 * 1000), // 1 minute
+          refreshToken: refreshToken
+        };
+
+        await db.collection('fileMetadata').insertOne(fileMetadata);
+        res.status(201).json({ message: 'File uploaded successfully.', temporaryUrl: tempUrl });
+      });
+
+      uploadStream.on('error', (error) => {
+        console.error('GridFS upload error:', error);
+        res.status(500).json({ error: 'Failed to upload file to GridFS.' });
+      });
+    }
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'Internal server error.' });
   }
 });
 
-const upload = multer({ storage });
+// File access endpoint
+app.get('/files/:fileId', async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+  const { refreshToken } = req.query;
 
-// Connect to MongoDB
-const options: MongoClientOptions = {};
+  console.log('File access request received with fileId:', fileId);
 
-MongoClient.connect(mongoUri, options)
-  .then((client: import('mongodb').MongoClient) => {
-    db = client.db(dbName);
-    console.log('Connected to MongoDB');
-  })
-  .catch((err: Error) => {
-    console.error('Failed to connect to MongoDB', err);
-  });
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Unauthorized: Refresh token is required.' });
+  }
+
+    try {
+      jwt.verify(refreshToken as string, REFRESH_TOKEN_SECRET);
+
+      console.log('Attempting to find file metadata with _id:', fileId);
+      const fileMetadata = await db.collection('fileMetadata').findOne({ _id: new mongodb.ObjectId(fileId) });
+
+      if (!fileMetadata) {
+        console.log('File metadata not found.');
+        return res.status(404).json({ error: 'File not found.' });
+      }
+
+    const bucket = new GridFSBucket(db, {
+      bucketName: 'uploads'
+    });
+
+    console.log('Opening download stream with fileId:', fileId);
+    const downloadStream = bucket.openDownloadStream(new mongodb.ObjectId(fileId));
+
+    res.setHeader('Content-Type', fileMetadata.mimetype);
+    downloadStream.pipe(res);
+  } catch (error) {
+    console.error('File access error:', error);
+    res.status(403).json({ error: 'Forbidden: Invalid or expired refresh token.' });
+  }
+});
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-});
-
-// File upload endpoint
-app.post('/upload', upload.single('file'), async (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
-
-  const refreshToken = jwt.sign({ filename: req.file.filename }, process.env.REFRESH_TOKEN_SECRET || 'your-secret-key', { expiresIn: '1h' });
-  const tempUrl = `/files/${req.file.filename}?refreshToken=${refreshToken}`;
-
-  // Store file metadata in MongoDB
-  const fileMetadata = {
-    filename: req.file.filename,
-    originalname: req.file.originalname,
-    mimetype: req.file.mimetype,
-    size: req.file.size,
-    expirationTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
-    refreshToken: refreshToken
-  };
-
-  await db.collection('fileMetadata').insertOne(fileMetadata);
-
-  res.status(201).json({ message: 'File uploaded successfully.', temporaryUrl: tempUrl });
-});
-
-// File access endpoint
-app.get('/files/:filename', async (req: Request, res: Response) => {
-  const { filename } = req.params;
-  const { refreshToken } = req.query;
-
-  if (!refreshToken) {
-    return res.status(401).send('Unauthorized: Refresh token is required.');
-  }
-
-  try {
-    jwt.verify(refreshToken as string, process.env.REFRESH_TOKEN_SECRET || 'your-secret-key');
-  } catch (error) {
-    return res.status(403).send('Forbidden: Invalid or expired refresh token.');
-  }
-
-  const fileMetadata = await db.collection('fileMetadata').findOne({ filename });
-
-  if (!fileMetadata) {
-    return res.status(404).send('File not found.');
-  }
-
-  // Serve the file from GridFS
-  const bucket = new mongodb.GridFSBucket(db, {
-    bucketName: 'uploads'
-  });
-
-  const downloadStream = bucket.openDownloadStreamByName(filename);
-
-  res.setHeader('Content-Type', fileMetadata.mimetype);
-  downloadStream.pipe(res);
 });
