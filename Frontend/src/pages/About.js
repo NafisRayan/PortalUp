@@ -2,9 +2,9 @@ import React from "react";
 
 const About = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800 p-8 text-white">
-      <div className="w-full max-w-2xl p-8 bg-gray-900 rounded-xl shadow-lg text-center">
-        <h1 className="text-5xl font-semibold mb-6 text-red-500">About File Uploader</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 text-white">
+      <div className="w-full max-w-2xl p-8 bg-gray-800 border-2 border-green-500 rounded-xl shadow-lg text-center">
+        <h1 className="text-5xl font-semibold mb-6 text-green-400">About File Uploader</h1>
         <p className="text-gray-300 mb-8 text-lg">
           File Uploader is a simple and user-friendly application that allows you to upload images, text, PDF, and document files. Once uploaded, you receive a temporary URL to access or share your file.
         </p>

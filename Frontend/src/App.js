@@ -9,13 +9,20 @@ import NotFound from "./pages/NotFound";
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/upload" element={<Upload />} />
-        <Route path="/about" element={<About />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="flex flex-col h-full bg-gray-800">
+        {/* Navbar */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div className="bg-gray-900 text-white page-transition">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 }

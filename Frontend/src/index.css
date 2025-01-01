@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background-color: #1e293b; /* Dark background */
+  color: #f8f8f2; /* Light text */
+  font-family: 'orbitron', sans-serif;
+}
+
+.page-transition {
+  transition: opacity 0.5s ease-in-out;
+}
+
+@layer components {
+
+}

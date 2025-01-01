@@ -3,22 +3,20 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <nav className="bg-black p-6">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-red-600 text-3xl font-bold">
-          File Uploader
+    <nav className="bg-gray-900 p-6 flex justify-between items-center">
+      <Link to="/" className="text-cyan-400 text-3xl font-bold">
+        File Uploader
+      </Link>
+      <div className="flex space-x-4">
+        <Link to="/" className="py-2 px-4 text-gray-400 hover:text-cyan-200 hover:bg-gray-800 rounded transition duration-200">
+          Home
         </Link>
-        <div className="flex space-x-8 items-center">
-          <Link to="/" className="text-gray-300 hover:text-white transition duration-300">
-            Home
-          </Link>
-          <Link to="/upload" className="text-gray-300 hover:text-white transition duration-300">
-            Upload
-          </Link>
-          <Link to="/about" className="text-gray-300 hover:text-white transition duration-300">
-            About
-          </Link>
-        </div>
+        <Link to="/upload" className="py-2 px-4 text-gray-400 hover:text-cyan-200 hover:bg-gray-800 rounded transition duration-200">
+          Upload
+        </Link>
+        <Link to="/about" className="py-2 px-4 text-gray-400 hover:text-cyan-200 hover:bg-gray-800 rounded transition duration-200">
+          About
+        </Link>
       </div>
     </nav>
   );
