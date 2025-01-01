@@ -122,9 +122,12 @@ const FileUpload = () => {
       {uploadStatus === 'error' && <p className="text-red-500 mt-2">File upload failed. Please try again.</p>}
       {temporaryUrl && (
         <div className="mt-4">
-          <p className="text-green-500">
-            Temporary URL: <a href={`http://localhost:3000${temporaryUrl}`} className="underline">{temporaryUrl}</a>
-          </p>
+          <button 
+            onClick={() => window.location.href = `http://localhost:3000${temporaryUrl}`}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Download File
+          </button>
           <p className="text-gray-400 text-sm">
             Expires in approximately 1 minute.
           </p>
