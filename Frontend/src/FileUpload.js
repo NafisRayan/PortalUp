@@ -31,10 +31,6 @@ const FileUpload = () => {
         alert('File size should be less than 5MB.');
         return;
       }
-      if (!selectedFile.type.startsWith('image/')) {
-        alert('Only image files are allowed.');
-        return;
-      }
       setFile(selectedFile);
       setFilePreview(URL.createObjectURL(selectedFile));
     }
@@ -46,10 +42,6 @@ const FileUpload = () => {
     if (droppedFile) {
       if (droppedFile.size > 5 * 1024 * 1024) { // 5MB
         alert('File size should be less than 5MB.');
-        return;
-      }
-      if (!droppedFile.type.startsWith('image/')) {
-        alert('Only image files are allowed.');
         return;
       }
       setFile(droppedFile);
@@ -113,7 +105,7 @@ const FileUpload = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
             </svg>
             <p className="mt-2 text-sm text-blue-500">Upload a file or drag and drop</p>
-            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+            <p className="text-xs text-gray-500">All file types up to 5MB</p>
           </>
         )}
         <input
@@ -131,7 +123,7 @@ const FileUpload = () => {
       {temporaryUrl && (
         <div className="mt-4">
           <p className="text-green-500">
-            Temporary URL: <a href={temporaryUrl} className="underline">{temporaryUrl}</a>
+            Temporary URL: <a href={`http://localhost:3000${temporaryUrl}`} className="underline">{temporaryUrl}</a>
           </p>
           <p className="text-gray-400 text-sm">
             Expires in approximately 1 minute.
