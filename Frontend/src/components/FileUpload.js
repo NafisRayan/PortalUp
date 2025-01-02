@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
+// Custom Document Icon (SVG)
+const DocumentIcon = () => (
+  <svg
+    className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 mx-auto text-blue-300"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+    ></path>
+  </svg>
+);
+
 const FileUpload = () => {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -44,7 +62,11 @@ const FileUpload = () => {
         return;
       }
       setFile(selectedFile);
-      setFilePreview(URL.createObjectURL(selectedFile));
+      if (selectedFile.type.startsWith('image/')) {
+        setFilePreview(URL.createObjectURL(selectedFile));
+      } else {
+        setFilePreview(null);
+      }
     }
   };
 
@@ -102,15 +124,21 @@ const FileUpload = () => {
         whileTap={{ scale: 0.95 }}
       >
         {filePreview ? (
-          <motion.img
-            src={filePreview}
-            alt="File preview"
-            className="max-h-48 mx-auto rounded-md animate-fade-in"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          />
+          <motion.div className="flex flex-col items-center">
+            <motion.img
+              src={filePreview}
+              alt="File preview"
+              className="max-h-48 mx-auto rounded-md animate-fade-in"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            />
+            <p className="mt-2 text-sm text-green-500 animate-slide-in-down">{file.name}</p>
+          </motion.div>
         ) : file ? (
-          <p className="mt-2 text-sm text-green-500 animate-slide-in-down">{file.name}</p>
+          <motion.div className="flex flex-col items-center">
+            <DocumentIcon />
+            <p className="mt-2 text-sm text-green-500 animate-slide-in-down">{file.name}</p>
+          </motion.div>
         ) : (
           <motion.div
             className="flex flex-col items-center justify-center animate-fade-in"
