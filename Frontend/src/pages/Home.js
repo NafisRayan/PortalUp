@@ -21,7 +21,7 @@ const Home = () => {
 
   return (
     <motion.div
-      className="h-screen bg-gradient-to-br from-purple-800 to-blue-600 flex justify-center items-center p-6"
+      className="h-screen bg-gradient-to-br from-pink-600 to-indigo-800 flex justify-center items-center p-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

@@ -89,7 +89,7 @@ const FileUpload = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6 animate-pulse">
+      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6 ">
         <span className="text-pink-400">Drop</span> or <span className="text-green-400">Upload</span>
       </h2>
       <motion.label

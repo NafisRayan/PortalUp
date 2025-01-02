@@ -21,14 +21,14 @@ const About = () => {
 
   return (
     <motion.div
-      className="h-screen bg-gradient-to-br from-blue-800 to-purple-700 flex justify-center items-center p-4 md:p-8"
+      className="h-screen bg-gradient-to-br from-pink-600 to-indigo-800 flex justify-center items-center p-4 md:p-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       <motion.div className="bg-black bg-opacity-60 rounded-lg shadow-xl p-6 md:p-12 m-4 w-full backdrop-blur-md animate-zoom-in flex flex-col justify-center items-center" style={{ height: '70vh' }}>
         <motion.h1
-          className="text-white font-bold text-3xl md:text-4xl text-center mb-6 md:mb-8 animate-pulse"
+          className="text-white font-bold text-3xl md:text-4xl text-center mb-6 md:mb-8 "
           variants={textVariants}
         >
           About <span className="text-teal-400">File Uploader</span>
@@ -41,7 +41,7 @@ const About = () => {
           <span className="font-semibold text-teal-400">File Uploader</span> is designed to make file sharing seamless and efficient.
           Upload your images, documents, and other files to get a temporary, shareable link.
         </motion.p>
-        <p className="text-gray-400 text-xs md:text-sm text-center animate-pulse">
+        <p className="text-gray-400 text-xs md:text-sm text-center ">
           Built with <span className="text-red-500">React</span> and <span className="text-sky-500">Tailwind CSS</span>.
         </p>
       </motion.div>
