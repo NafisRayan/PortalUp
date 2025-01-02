@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
@@ -7,6 +8,7 @@ const FileUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [temporaryUrl, setTemporaryUrl] = useState(null);
   const [expirationTime, setExpirationTime] = useState(null);
+  const dropRef = useRef(null);
 
   useEffect(() => {
     if (expirationTime) {
@@ -26,26 +28,23 @@ const FileUpload = () => {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    if (selectedFile) {
-      if (selectedFile.size > 5 * 1024 * 1024) { // 5MB
-        alert('File size should be less than 5MB.');
-        return;
-      }
-      setFile(selectedFile);
-      setFilePreview(URL.createObjectURL(selectedFile));
-    }
+    handleFile(selectedFile);
   };
 
   const handleDrop = (event) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
-    if (droppedFile) {
-      if (droppedFile.size > 5 * 1024 * 1024) { // 5MB
+    handleFile(droppedFile);
+  };
+
+  const handleFile = (selectedFile) => {
+    if (selectedFile) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
         alert('File size should be less than 5MB.');
         return;
       }
-      setFile(droppedFile);
-      setFilePreview(URL.createObjectURL(droppedFile));
+      setFile(selectedFile);
+      setFilePreview(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -84,29 +83,48 @@ const FileUpload = () => {
   };
 
   return (
-    <div className="max-w-md p-8 bg-gray-800 rounded-xl shadow-lg text-center text-white">
-      <h2 className="text-3xl font-semibold mb-4">File Upload</h2>
-      <p className="text-gray-400 mb-6">Drop your files here or click to upload</p>
-      <label
+    <motion.div
+      className="max-w-sm md:max-w-md p-6 md:p-10 bg-black bg-opacity-50 rounded-xl shadow-lg text-center text-white backdrop-blur-md"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 animate-pulse">
+        <span className="text-pink-400">Drop</span> or <span className="text-green-400">Upload</span>
+      </h2>
+      <motion.label
         htmlFor="fileInput"
-        className="border-2 border-dashed border-gray-600 rounded-lg p-16 mb-4 cursor-pointer block"
-        onDragOver={(e) => {
-          e.preventDefault();
-        }}
+        className="border-4 border-dashed border-blue-400 rounded-lg p-8 md:p-16 mb-4 md:mb-6 cursor-pointer block transition duration-300 hover:bg-blue-500 hover:bg-opacity-20"
+        onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
+        ref={dropRef}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
         {filePreview ? (
-          <img src={filePreview} alt="File preview" className="max-h-32 mx-auto mb-4" />
+          <motion.img
+            src={filePreview}
+            alt="File preview"
+            className="max-h-48 mx-auto rounded-md animate-fade-in"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          />
         ) : file ? (
-          <p className="mt-2 text-sm text-blue-500">{file.name}</p>
+          <p className="mt-2 text-sm text-green-500 animate-slide-in-down">{file.name}</p>
         ) : (
-          <>
-            <svg className="w-12 h-12 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <motion.div
+            className="flex flex-col items-center justify-center animate-fade-in"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <svg className="w-12 h-12 md:w-16 md:h-16 mx-auto text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
             </svg>
-            <p className="mt-2 text-sm text-blue-500">Upload a file or drag and drop</p>
-            <p className="text-xs text-gray-500">All file types up to 5MB</p>
-          </>
+            <p className="mt-4 text-base md:text-lg text-blue-400">
+              Drag 'n' drop files here
+            </p>
+            <p className="text-xs md:text-sm text-gray-500">Max file size: 5MB</p>
+          </motion.div>
         )}
         <input
           type="file"
@@ -114,32 +132,66 @@ const FileUpload = () => {
           className="hidden"
           id="fileInput"
         />
-      </label>
-      <button onClick={handleUpload} disabled={isUploading} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg transition duration-300">
-        {isUploading ? 'Uploading...' : 'Upload'}
-      </button>
-      {uploadStatus === 'success' && !temporaryUrl && <p className="text-green-500 mt-2">File uploaded successfully!</p>}
-      {uploadStatus === 'error' && <p className="text-red-500 mt-2">File upload failed. Please try again.</p>}
-      {temporaryUrl && (
-      <div className="mt-4">
-        <button 
-          onClick={() => navigator.clipboard.writeText(`http://localhost:3000${temporaryUrl}`)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+      </motion.label>
+      <motion.div
+        className="flex justify-center"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <button
+          onClick={handleUpload}
+          disabled={isUploading}
+          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-2 md:py-3 px-6 md:px-8 rounded-full transition duration-300 ease-in-out"
         >
-          Copy Link
+          {isUploading ? <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24" /> : 'Upload File'}
         </button>
-        <button 
-          onClick={() => window.location.href = `http://localhost:3000${temporaryUrl}`}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      </motion.div>
+      {uploadStatus === 'success' && (
+        <motion.p
+          className="text-green-500 mt-4 animate-fade-in"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         >
-          Download File
-        </button>
-        <p className="mt-4 text-gray-400 text-sm">
-          Expires in approximately 1 minute.
-        </p>
-      </div>
+          File uploaded successfully!
+        </motion.p>
       )}
-    </div>
+      {uploadStatus === 'error' && (
+        <motion.p
+          className="text-red-500 mt-4 animate-shake"
+          initial={{ x: -10 }}
+          animate={{ x: 10 }}
+          transition={{ type: "spring", stiffness: 100 }}
+        >
+          File upload failed. Please try again.
+        </motion.p>
+      )}
+      {temporaryUrl && (
+        <motion.div
+          className="mt-6 animate-slide-in-up"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={() => navigator.clipboard.writeText(`http://localhost:3000${temporaryUrl}`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300"
+            >
+              Copy Link
+            </button>
+            <button
+              onClick={() => window.location.href = `http://localhost:3000${temporaryUrl}`}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-300"
+            >
+              Download
+            </button>
+          </div>
+          <p className="mt-4 text-gray-400 text-sm">
+            Link expires in approximately 1 minute.
+          </p>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 
