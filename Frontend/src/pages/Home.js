@@ -26,9 +26,9 @@ const Home = () => {
       initial="hidden"
       animate="visible"
     >
-      <motion.div className="h-[70%] bg-black bg-opacity-60 rounded-xl shadow-lg p-8 w-full" style={{ backdropFilter: 'blur(10px)' }}>
+      <motion.div className="bg-black bg-opacity-60 rounded-xl shadow-lg p-8 w-full" style={{ backdropFilter: 'blur(10px)' }}>
         <motion.h1
-          className="mt-24 text-white font-bold text-4xl text-center mb-6"
+          className="text-white font-bold text-4xl text-center mb-6"
           variants={textVariants}
         >
           Welcome to <span className="text-green-400">FileUp</span>
