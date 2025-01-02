@@ -21,14 +21,14 @@ const Home = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-purple-800 to-blue-600 flex justify-center items-center p-6"
+      className="h-screen bg-gradient-to-br from-purple-800 to-blue-600 flex justify-center items-center p-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <motion.div className="bg-black bg-opacity-60 rounded-xl shadow-lg p-8 w-full" style={{ backdropFilter: 'blur(10px)' }}>
+      <motion.div className="h-[70%] bg-black bg-opacity-60 rounded-xl shadow-lg p-8 w-full" style={{ backdropFilter: 'blur(10px)' }}>
         <motion.h1
-          className="text-white font-bold text-4xl text-center mb-6"
+          className="mt-24 text-white font-bold text-4xl text-center mb-6"
           variants={textVariants}
         >
           Welcome to <span className="text-green-400">FileUp</span>
