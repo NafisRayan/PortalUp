@@ -121,17 +121,23 @@ const FileUpload = () => {
       {uploadStatus === 'success' && !temporaryUrl && <p className="text-green-500 mt-2">File uploaded successfully!</p>}
       {uploadStatus === 'error' && <p className="text-red-500 mt-2">File upload failed. Please try again.</p>}
       {temporaryUrl && (
-        <div className="mt-4">
-          <button 
-            onClick={() => window.location.href = `http://localhost:3000${temporaryUrl}`}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Download File
-          </button>
-          <p className="text-gray-400 text-sm">
-            Expires in approximately 1 minute.
-          </p>
-        </div>
+      <div className="mt-4">
+        <button 
+          onClick={() => navigator.clipboard.writeText(`http://localhost:3000${temporaryUrl}`)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+        >
+          Copy Link
+        </button>
+        <button 
+          onClick={() => window.location.href = `http://localhost:3000${temporaryUrl}`}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Download File
+        </button>
+        <p className="mt-4 text-gray-400 text-sm">
+          Expires in approximately 1 minute.
+        </p>
+      </div>
       )}
     </div>
   );
