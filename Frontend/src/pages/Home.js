@@ -31,7 +31,7 @@ const Home = () => {
           className="text-white font-bold text-4xl text-center mb-6"
           variants={textVariants}
         >
-          Welcome to <span className="text-green-400">FileUp</span>
+          Welcome to <span className="text-green-400">PortalUp</span>
         </motion.h1>
         <motion.p
           className="text-gray-300 text-lg text-center mb-8"

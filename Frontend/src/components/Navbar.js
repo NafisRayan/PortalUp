@@ -31,7 +31,7 @@ const Navbar = () => {
           >
             <path d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-8l-4-4-4 4M12 4.2v15.8" />
           </motion.svg>
-          FileUp
+          PortalUp
         </NavLink>
       </div>
 
