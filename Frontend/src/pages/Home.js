@@ -26,7 +26,7 @@ const Home = () => {
       initial="hidden"
       animate="visible"
     >
-      <motion.div className="bg-black bg-opacity-60 rounded-xl shadow-lg p-8 w-full" style={{ backdropFilter: 'blur(10px)' }}>
+      <motion.div className="bg-black bg-opacity-60 rounded-xl shadow-lg p-8 w-full flex flex-col justify-center items-center" style={{ backdropFilter: 'blur(10px)', height: '70vh' }}>
         <motion.h1
           className="text-white font-bold text-4xl text-center mb-6"
           variants={textVariants}

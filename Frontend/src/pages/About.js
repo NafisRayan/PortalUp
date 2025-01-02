@@ -26,7 +26,7 @@ const About = () => {
       initial="hidden"
       animate="visible"
     >
-      <motion.div className="bg-black bg-opacity-60 rounded-lg shadow-xl p-6 md:p-12 m-4 w-full backdrop-blur-md animate-zoom-in">
+      <motion.div className="bg-black bg-opacity-60 rounded-lg shadow-xl p-6 md:p-12 m-4 w-full backdrop-blur-md animate-zoom-in flex flex-col justify-center items-center" style={{ height: '70vh' }}>
         <motion.h1
           className="text-white font-bold text-3xl md:text-4xl text-center mb-6 md:mb-8 animate-pulse"
           variants={textVariants}
