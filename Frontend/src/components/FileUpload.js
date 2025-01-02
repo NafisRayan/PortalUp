@@ -84,7 +84,7 @@ const FileUpload = () => {
 
   return (
     <motion.div
-      className="max-w-sm md:max-w-md p-6 md:p-10 bg-black bg-opacity-50 rounded-xl shadow-lg text-center text-white backdrop-blur-md"
+      className="p-6 md:p-10 bg-black bg-opacity-50 rounded-xl shadow-lg text-center text-white backdrop-blur-md"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
