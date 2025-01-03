@@ -11,14 +11,14 @@ import { FileService } from './services/file.service';
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // Middleware
 app.use(express.json());
 app.use(cors());
 
-// MongoDB connection URI (hardcoded for testing)
-const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://vaugheu:temp2@temp2.hp1lz.mongodb.net/?retryWrites=true&w=majority&appName=temp2';
+// MongoDB connection URI
+const mongoUri = process.env.MONGODB_URI;
 console.log('MongoDB URI:', mongoUri); // Debugging
 
 const dbName = 'portalup';
@@ -29,6 +29,10 @@ let db: Db;
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Connect to MongoDB
+if (!mongoUri) {
+  throw new Error('MONGODB_URI environment variable is not defined');
+}
+
 MongoClient.connect(mongoUri)
   .then((client) => {
     db = client.db(dbName);
@@ -52,6 +56,10 @@ MongoClient.connect(mongoUri)
   });
 
 // Start the server
+if (!port) {
+  throw new Error('PORT environment variable is not defined');
+}
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
