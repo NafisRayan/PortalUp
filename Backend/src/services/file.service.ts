@@ -1,7 +1,10 @@
 import { Db, ObjectId, GridFSBucket, GridFSBucketReadStream } from 'mongodb';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const REFRESH_TOKEN_SECRET = 'your-secret-key'; // Hardcoded secret key
+dotenv.config();
+
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET as string;
 
 export class FileService {
   private db: Db;
