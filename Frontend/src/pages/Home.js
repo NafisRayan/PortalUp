@@ -16,7 +16,7 @@ const Home = () => {
   const buttonVariants = {
     hidden: { scale: 0 },
     visible: { scale: 1, transition: { delay: 0.5, duration: 0.6, type: "spring", stiffness: 150 } },
-    hover: { scale: 1.1, textShadow: "0px 0px 8px rgb(255,255,255)", boxShadow: "0px 0px 8px rgb(255,255,255)", transition: { duration: 0.3 } },
+    hover: { scale: 1.1, textShadow: "0px 0px 8px rgb(255,255,255)",  transition: { duration: 0.3 } },
   };
 
   return (

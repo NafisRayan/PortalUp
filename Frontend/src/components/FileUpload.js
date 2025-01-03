@@ -81,7 +81,7 @@ const FileUpload = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch('http://localhost:3000/upload', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -202,13 +202,13 @@ const FileUpload = () => {
         >
           <div className="flex justify-center space-x-4">
             <button
-              onClick={() => navigator.clipboard.writeText(`http://localhost:3000${temporaryUrl}`)}
+              onClick={() => navigator.clipboard.writeText(`${process.env.REACT_APP_BACKEND_URL}${temporaryUrl}`)}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300"
             >
               Copy Link
             </button>
             <button
-              onClick={() => window.location.href = `http://localhost:3000${temporaryUrl}`}
+              onClick={() => window.location.href = `${process.env.REACT_APP_BACKEND_URL}${temporaryUrl}`}
               className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-300"
             >
               Download
